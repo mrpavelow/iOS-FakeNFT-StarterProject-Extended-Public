@@ -1,5 +1,10 @@
 import SwiftUI
 
+enum TabTag {
+    static let test = 0
+    static let statistics = 1
+}
+
 struct TabBarView: View {
     var body: some View {
         TabView {
@@ -11,6 +16,13 @@ struct TabBarView: View {
                     )
                 }
                 .backgroundStyle(.background)
+            
+            StatisticsView()
+                .tabItem {
+                    Label("Статистика", systemImage: "flag.2.crossed.fill")
+                }
+                .backgroundStyle(.background)
+                .tag(TabTag.statistics)
         }
     }
 }
