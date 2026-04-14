@@ -4,3 +4,11 @@
 "Error.unknown" = "Произошла неизвестная ошибка";
 "Error.repeat" = "Повторить";
 "Error.title" = "Ошибка";
+
+
+// MARK: - Statistics
+
+"Statistics.sort.title" = "Сортировка";
+"Statistics.sort.byName" = "По имени";
+"Statistics.sort.byScore" = "По рейтингу";
+"Statistics.sort.close" = "Закрыть";
