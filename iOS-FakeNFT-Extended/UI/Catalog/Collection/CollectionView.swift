@@ -7,7 +7,7 @@ struct CollectionView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 
-                AsyncImage(url: collection.cover) { image in
+                AsyncImage(url: collection.coverUrl) { image in
                     image
                         .resizable()
                         .scaledToFill()
@@ -23,14 +23,13 @@ struct CollectionView: View {
                 if let description = collection.description {
                     Text(description)
                         .font(.bodyRegular)
-                        .foregroundColor(.secondary)
+                        .foregroundStyle(.secondary)
                 }
                 
                 Text("Автор: \(collection.author)")
                     .font(.caption1)
-                    .foregroundColor(.secondary)
-                
-                // Тут позже будет UICollectionView (пока заглушка)
+                    .foregroundStyle(.secondary)
+            // TODO: Тут позже будет UICollectionView (пока заглушка)
                 Text("NFT список будет тут")
                     .padding(.top, 16)
                 

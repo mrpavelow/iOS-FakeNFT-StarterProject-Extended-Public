@@ -11,10 +11,8 @@ final class CatalogViewModel: ObservableObject {
         
         var title: String {
             switch self {
-            case .byName:
-                return "По названию"
-            case .byCount:
-                return "По количеству NFT"
+            case .byName: "По названию"
+            case .byCount: "По количеству NFT"
             }
         }
     }

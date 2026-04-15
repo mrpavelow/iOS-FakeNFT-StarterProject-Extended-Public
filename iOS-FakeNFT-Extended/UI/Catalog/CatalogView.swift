@@ -88,7 +88,7 @@ struct CatalogView: View {
                     NftCollection(
                         id: "1",
                         name: "Brown",
-                        cover: URL(string: "https://code.s3.yandex.net/Mobile/iOS/NFT/Обложки_коллекций/Brown.png")!,
+                        coverUrl: URL(string: "https://code.s3.yandex.net/Mobile/iOS/NFT/Обложки_коллекций/Brown.png")!,
                         nfts: ["1", "2", "3"],
                         description: "Test",
                         author: "Author"
@@ -96,7 +96,7 @@ struct CatalogView: View {
                     NftCollection(
                         id: "2",
                         name: "White",
-                        cover: URL(string: "https://code.s3.yandex.net/Mobile/iOS/NFT/Обложки_коллекций/White.png")!,
+                        coverUrl: URL(string: "https://code.s3.yandex.net/Mobile/iOS/NFT/Обложки_коллекций/White.png")!,
                         nfts: ["1", "2", "3", "4", "5"],
                         description: "Test",
                         author: "Author"
