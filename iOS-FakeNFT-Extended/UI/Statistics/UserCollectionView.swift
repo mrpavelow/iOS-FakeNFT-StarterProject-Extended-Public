@@ -21,7 +21,7 @@ struct UserCollectionView: View {
     var body: some View {
         ScrollView {
             LazyVGrid(columns: columns, spacing: 12) {
-                ForEach(0..<6, id: \.self) { _ in
+                ForEach(0..<count, id: \.self) { _ in
                     VStack(alignment: .leading, spacing: 6) {
                         RoundedRectangle(cornerRadius: 12)
                             .frame(height: 92)
