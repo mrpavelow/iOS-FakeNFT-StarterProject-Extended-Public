@@ -10,17 +10,16 @@ struct StatisticsView: View {
     
     @State private var viewModel = StatisticsViewModel()
     @State private var isSortSheetPresented = false
-    @State private var selectedUser: StatisticsUser?
-    
-    // MARK: - Body
+    @State private var selectedUser: StatisticsUser?    
     
     var body: some View {
         NavigationStack {
             listView
+                .navigationDestination(item: $selectedUser) { user in
+                    UserCardView(user: user)
+                }
         }
     }
-    
-    // MARK: - Private Views
     
     private var listView: some View {
         List {
@@ -81,8 +80,6 @@ struct StatisticsView: View {
         }
     }
 }
-
-// MARK: - Preview
 
 #Preview {
     NavigationView {
