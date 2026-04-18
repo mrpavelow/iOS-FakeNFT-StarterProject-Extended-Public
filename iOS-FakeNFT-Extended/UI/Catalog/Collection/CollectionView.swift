@@ -1,42 +1,97 @@
 import SwiftUI
 
 struct CollectionView: View {
-    let collection: NftCollection
+    @StateObject private var viewModel: CollectionViewModel
+    @Environment(\.dismiss) private var dismiss
+    @State private var isAuthorWebViewPresented = false
+    
+    private let columns = [
+        GridItem(.flexible(), spacing: 9),
+        GridItem(.flexible(), spacing: 9),
+        GridItem(.flexible(), spacing: 9)
+    ]
+    
+    init(viewModel: CollectionViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
     
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 24) {
+                CollectionHeaderView(
+                    collection: viewModel.collection,
+                    authorURL: viewModel.authorURL,
+                    onAuthorTap: {
+                        guard viewModel.authorURL != nil else { return }
+                        isAuthorWebViewPresented = true
+                    },
+                )
                 
-                AsyncImage(url: collection.coverUrl) { image in
-                    image
-                        .resizable()
-                        .scaledToFill()
-                } placeholder: {
-                    Color.gray.opacity(0.2)
-                }
-                .frame(height: 200)
-                .clipped()
-                
-                Text(collection.name)
-                    .font(.bodyBold)
-                
-                if let description = collection.description {
-                    Text(description)
-                        .font(.bodyRegular)
-                        .foregroundStyle(.secondary)
-                }
-                
-                Text("Автор: \(collection.author)")
-                    .font(.caption1)
-                    .foregroundStyle(.secondary)
-            // TODO: Тут позже будет UICollectionView (пока заглушка)
-                Text("NFT список будет тут")
-                    .padding(.top, 16)
-                
+                content
             }
-            .padding(16)
+            .padding(.horizontal, 16)
+            .padding(.top, 8)
+            .padding(.bottom, 24)
         }
-        .navigationTitle("Коллекция")
         .navigationBarTitleDisplayMode(.inline)
+        .background(Color(.systemBackground))
+        .task {
+            viewModel.loadIfNeeded()
+        }
+        .sheet(isPresented: $isAuthorWebViewPresented) {
+            if let url = viewModel.authorURL {
+                NavigationStack {
+                    AuthorWebView(url: url)
+                        .ignoresSafeArea(edges: .bottom)
+                        .toolbar {
+                            ToolbarItem(placement: .topBarLeading) {
+                                Button("Закрыть") {
+                                    isAuthorWebViewPresented = false
+                                }
+                            }
+                        }
+                }
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var content: some View {
+        switch viewModel.state {
+        case .idle, .loading:
+            VStack {
+                ProgressView()
+                    .padding(.top, 24)
+            }
+            .frame(maxWidth: .infinity)
+            
+        case .failed(let message):
+            VStack(spacing: 12) {
+                Text(message)
+                    .font(.bodyRegular)
+                    .multilineTextAlignment(.center)
+                
+                Button("Повторить") {
+                    viewModel.load()
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.top, 24)
+            
+        case .loaded:
+            LazyVGrid(columns: columns, alignment: .leading, spacing: 16) {
+                ForEach(viewModel.items) { item in
+                    CollectionNftCardView(
+                        model: item,
+                        onLikeTap: {
+                            viewModel.toggleLike(for: item.id)
+                        },
+                        onCartTap: {
+                            viewModel.toggleCart(for: item.id)
+                        }
+                    )
+                }
+            }
+        }
     }
 }

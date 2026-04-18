@@ -5,7 +5,7 @@ struct CatalogCollectionCardView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            AsyncImage(url: model.coverUrl) { image in
+            AsyncImage(url: model.cover) { image in
                 image
                     .resizable()
                     .scaledToFill()
@@ -28,7 +28,7 @@ private extension NftCollection {
     static let preview = NftCollection(
         id: "1",
         name: "Peach",
-        coverUrl: URL(string: "https://picsum.photos/400/240")!,
+        cover: URL(string: "https://code.s3.yandex.net/Mobile/iOS/NFT/Обложки_коллекций/Peach.png")!,
         nfts: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"],
         description: "Test description",
         author: "John Doe"

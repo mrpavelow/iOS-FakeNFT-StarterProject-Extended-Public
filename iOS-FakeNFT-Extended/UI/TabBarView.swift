@@ -8,7 +8,8 @@ struct TabBarView: View {
             CatalogView(
                 viewModel: CatalogViewModel(
                     catalogService: servicesAssembly.catalogService
-                )
+                ),
+                nftService: servicesAssembly.nftService
             )
             .tabItem {
                 Label(

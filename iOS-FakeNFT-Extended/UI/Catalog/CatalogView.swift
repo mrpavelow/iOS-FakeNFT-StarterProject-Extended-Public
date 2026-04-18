@@ -4,8 +4,11 @@ struct CatalogView: View {
     @StateObject private var viewModel: CatalogViewModel
     @State private var isSortDialogPresented = false
     
-    init(viewModel: CatalogViewModel) {
+    private let nftService: NftService
+    
+    init(viewModel: CatalogViewModel, nftService: NftService) {
         _viewModel = StateObject(wrappedValue: viewModel)
+        self.nftService = nftService
     }
     
     var body: some View {
@@ -66,7 +69,12 @@ struct CatalogView: View {
                 VStack(spacing: 12) {
                     ForEach(viewModel.sortedCollections) { collection in
                         NavigationLink {
-                            CollectionView(collection: collection)
+                            CollectionView(
+                                viewModel: CollectionViewModel(
+                                    collection: collection,
+                                    nftService: nftService
+                                )
+                            )
                         } label: {
                             CatalogCollectionCardView(model: collection)
                         }
@@ -78,31 +86,4 @@ struct CatalogView: View {
             }
         }
     }
-}
-
-#Preview {
-    CatalogView(
-        viewModel: CatalogViewModel(
-            catalogService: CatalogServiceStub(
-                result: .success([
-                    NftCollection(
-                        id: "1",
-                        name: "Brown",
-                        coverUrl: URL(string: "https://code.s3.yandex.net/Mobile/iOS/NFT/Обложки_коллекций/Brown.png")!,
-                        nfts: ["1", "2", "3"],
-                        description: "Test",
-                        author: "Author"
-                    ),
-                    NftCollection(
-                        id: "2",
-                        name: "White",
-                        coverUrl: URL(string: "https://code.s3.yandex.net/Mobile/iOS/NFT/Обложки_коллекций/White.png")!,
-                        nfts: ["1", "2", "3", "4", "5"],
-                        description: "Test",
-                        author: "Author"
-                    )
-                ])
-            )
-        )
-    )
 }
