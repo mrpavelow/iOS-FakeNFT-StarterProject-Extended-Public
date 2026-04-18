@@ -3,6 +3,14 @@ import SwiftUI
 struct TabBarView: View {
     var body: some View {
         TabView {
+            ProfileView(viewModel: ProfileViewModel(profileService: ProfileServiceStub(result: .success(Profile.getMock()))))
+                .tabItem {
+                    Label(
+                        NSLocalizedString("Tab.profile", comment: ""),
+                        systemImage: "person.crop.circle.fill"
+                    )
+                }
+                .backgroundStyle(.background)
             TestCatalogView()
                 .tabItem {
                     Label(
