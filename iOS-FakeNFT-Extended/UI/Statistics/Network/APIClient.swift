@@ -7,20 +7,7 @@
 import Foundation
 
 protocol APIClientProtocol {
-    func fetchAllCollections() async throws -> [NFTCollection]
-    func fetchCollection(id: String) async throws -> NFTCollection
-    func fetchAllNFTs() async throws -> [NFTItem]
     func fetchNFT(id: String) async throws -> NFTItem
-    func fetchProfile() async throws -> Profile
-    func updateProfileLikes(likedNFTIds: [String]) async throws -> Profile
-    func updateProfile(_ profile: Profile) async throws -> Profile
-    func fetchCart() async throws -> Cart
-    func updateCart(_ cart: Cart) async throws -> Cart
-    func payForOrder(with currencyId: String) async throws -> CheckoutResponse
-    func purchaseSelectedNFTs(nftIds: [String]) async throws -> Cart
-    func fetchCurrencies() async throws -> [Currency]
-    func fetchCurrency(id: String) async throws -> Currency
-    func retryAfter<T: Decodable>(_ error: APIClientError) async throws -> T
     func fetchUsers(sortBy: String?, page: Int?, size: Int?) async throws -> [UserDTO]
     func fetchUser(id: String) async throws -> UserDTO
 }
@@ -84,67 +71,10 @@ actor APIClient: APIClientProtocol {
         }
     }
     
-    func retryAfter<T: Decodable>(_ error: APIClientError) async throws -> T {
-        let endpoint: APIEndpoint = switch error {
-        case .invalidURL(let endPoint): endPoint
-        case .transport(_, let endPoint): endPoint
-        case .server(_, let endPoint, _): endPoint
-        case .decoding(_, let endPoint): endPoint
-        }
-        return try await request(endpoint)
-    }
-    
-    func fetchAllCollections() async throws -> [NFTCollection] {
-        try await request(.collections)
-    }
-    
-    func fetchCollection(id: String) async throws -> NFTCollection {
-        try await request(.collection(id: id))
-    }
-    
-    func fetchAllNFTs() async throws -> [NFTItem] {
-        try await request(.nfts)
-    }
-    
     func fetchNFT(id: String) async throws -> NFTItem {
         try await request(.nft(id: id))
     }
-    
-    func fetchProfile() async throws -> Profile {
-        try await request(.getProfile)
-    }
-    
-    func updateProfileLikes(likedNFTIds: [String]) async throws -> Profile {
-        try await request(.updateLikes(ids: likedNFTIds))
-    }
-    
-    func updateProfile(_ profile: Profile) async throws -> Profile {
-        try await request(.updateProfile(profile: profile))
-    }
-    
-    func fetchCart() async throws -> Cart {
-        try await request(.getCart)
-    }
-    
-    func updateCart(_ cart: Cart) async throws -> Cart {
-        try await request(.updateCart(ids: cart.nfts))
-    }
-    
-    func payForOrder(with currencyId: String) async throws -> CheckoutResponse {
-        try await request(.payForOrder(id: currencyId))
-    }
-    
-    func purchaseSelectedNFTs(nftIds: [String]) async throws -> Cart {
-        try await request(.checkOutCart(ids: nftIds))
-    }
-    
-    func fetchCurrencies() async throws -> [Currency] {
-        try await request(.currencies)
-    }
-    
-    func fetchCurrency(id: String) async throws -> Currency {
-        try await request(.currency(id: id))
-    }
+   
     func fetchUsers(sortBy: String?, page: Int?, size: Int?) async throws -> [UserDTO] {
         try await request(.users(sortBy: sortBy, page: page, size: size))
     }
@@ -153,99 +83,3 @@ actor APIClient: APIClientProtocol {
         try await request(.user(id: id))
     }
 }
-
-#if DEBUG
-final class MockAPIClient: APIClientProtocol {
-    private let delay: UInt64
-    
-    init(delay: UInt64 = 500_000_000) {
-        self.delay = delay
-    }
-    
-    func retryAfter<T: Decodable>(_ error: APIClientError) async throws -> T {
-        debugPrint("Not retrying in mock setup")
-        throw error
-    }
-    
-    func fetchAllCollections() async throws -> [NFTCollection] {
-        try await Task.sleep(nanoseconds: delay)
-        return NFTCollection.mockCollections
-    }
-    
-    func fetchCollection(id: String) async throws -> NFTCollection {
-        try await Task.sleep(nanoseconds: delay)
-        guard let collection = NFTCollection.mockCollections.first(where: { $0.id == id }) else {
-            throw NetworkError.statusCode(404)
-        }
-        return collection
-    }
-    
-    func fetchAllNFTs() async throws -> [NFTItem] {
-        try await Task.sleep(nanoseconds: delay)
-        return NFTItem.mockNFTs
-    }
-    
-    func fetchNFT(id: String) async throws -> NFTItem {
-        try await Task.sleep(nanoseconds: delay)
-        guard let nft = NFTItem.mockNFTs.first(where: { $0.id == id }) else {
-            throw NetworkError.statusCode(404)
-        }
-        return nft
-    }
-    
-    func fetchProfile() async throws -> Profile {
-        try await Task.sleep(nanoseconds: delay)
-        return .mock
-    }
-    
-    func updateProfileLikes(likedNFTIds: [String]) async throws -> Profile {
-        try await Task.sleep(nanoseconds: delay)
-        return .mock
-    }
-    
-    func updateProfile(_ profile: Profile) async throws -> Profile {
-        try await Task.sleep(nanoseconds: delay)
-        return .mock
-    }
-    
-    func fetchCart() async throws -> Cart {
-        try await Task.sleep(nanoseconds: delay)
-        return .mock
-    }
-    
-    func updateCart(_ cart: Cart) async throws -> Cart {
-        try await Task.sleep(nanoseconds: delay)
-        return .mock
-    }
-    
-    func payForOrder(with currencyId: String) async throws -> CheckoutResponse {
-        try await Task.sleep(nanoseconds: delay)
-        return .mock
-    }
-    
-    func purchaseSelectedNFTs(nftIds: [String]) async throws -> Cart {
-        try await Task.sleep(nanoseconds: delay)
-        return .mock
-    }
-    
-    func fetchCurrencies() async throws -> [Currency] {
-        try await Task.sleep(nanoseconds: delay)
-        return [.mock]
-    }
-    
-    func fetchCurrency(id: String) async throws -> Currency {
-        try await Task.sleep(nanoseconds: delay)
-        return .mock
-    }
-    func fetchUsers(sortBy: String?, page: Int?, size: Int?) async throws -> [UserDTO] {
-        try await Task.sleep(nanoseconds: delay)
-        return []
-    }
-
-    func fetchUser(id: String) async throws -> UserDTO {
-        try await Task.sleep(nanoseconds: delay)
-        throw NetworkError.statusCode(404)
-    }
-}
-#endif
-

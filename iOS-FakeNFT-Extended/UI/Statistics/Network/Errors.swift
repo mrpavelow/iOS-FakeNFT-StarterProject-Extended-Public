@@ -29,20 +29,6 @@ enum NetworkError: LocalizedError {
     }
 }
 
-enum NFTFetchError: LocalizedError {
-    case failedToFetchNFTs
-    case unknown
-    
-    var errorDescription: String? {
-        switch self {
-        case .failedToFetchNFTs:
-            return "Failed to fetch NFTs"
-        case .unknown:
-            return "Something bad happened..."
-        }
-    }
-}
-
 enum APIClientError: Error {
     case invalidURL(endPoint: APIEndpoint)
     case transport(Error, endPoint: APIEndpoint)

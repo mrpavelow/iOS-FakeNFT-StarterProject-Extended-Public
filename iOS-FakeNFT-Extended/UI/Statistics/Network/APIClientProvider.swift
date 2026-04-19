@@ -18,10 +18,4 @@ final class APIClientProvider {
     static func live(baseURL: String) -> APIClientProvider {
         APIClientProvider(client: APIClient(baseURL: baseURL))
     }
-    
-    #if DEBUG
-    static func mock(delay: UInt64 = 500_000_000) -> APIClientProvider {
-        APIClientProvider(client: MockAPIClient(delay: delay))
-    }
-    #endif
 }
