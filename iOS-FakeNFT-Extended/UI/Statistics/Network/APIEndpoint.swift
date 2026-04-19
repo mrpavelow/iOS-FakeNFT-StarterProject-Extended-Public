@@ -20,17 +20,17 @@ enum APIEndpoint {
     }
     
     var contentType: String {
-           "application/json"
-       }
-       
-       var method: String {
-           "GET"
-       }
-       
-       var body: Data? {
-           nil
-       }
- 
+        "application/json"
+    }
+    
+    var method: String {
+        "GET"
+    }
+    
+    var body: Data? {
+        nil
+    }
+    
     var queryItems: [URLQueryItem] {
         switch self {
         case .users(let sortBy, let page, let size):

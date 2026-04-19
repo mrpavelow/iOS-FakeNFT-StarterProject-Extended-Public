@@ -62,7 +62,6 @@ actor APIClient: APIClientProtocol {
             debugPrint("❌ Invalid response from server: \(httpResponse.statusCode), \(message ?? "no message"), ➡️ endpoint: \(endpoint)")
             throw APIClientError.server(statusCode: httpResponse.statusCode, endPoint: endpoint, message: message)
         }
-        
         do {
             return try decoder.decode(T.self, from: data)
         } catch {
@@ -74,11 +73,11 @@ actor APIClient: APIClientProtocol {
     func fetchNFT(id: String) async throws -> NFTItem {
         try await request(.nft(id: id))
     }
-   
+    
     func fetchUsers(sortBy: String?, page: Int?, size: Int?) async throws -> [UserDTO] {
         try await request(.users(sortBy: sortBy, page: page, size: size))
     }
-
+    
     func fetchUser(id: String) async throws -> UserDTO {
         try await request(.user(id: id))
     }

@@ -21,65 +21,119 @@ struct StatisticsView: View {
     var body: some View {
         NavigationStack {
             content
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button { isSortSheetPresented = true } label: {
-                            Image(systemName: "line.3.horizontal")
-                        }
-                    }
-                }
+                .toolbar { toolbarContent }
                 .confirmationDialog(
                     "Сортировка",
                     isPresented: $isSortSheetPresented,
                     titleVisibility: .visible
                 ) {
-                    Button(StatisticsSortOption.byName.title) { viewModel.setSort(.byName) }
-                    Button(StatisticsSortOption.byScore.title) { viewModel.setSort(.byScore) }
-                    Button("Закрыть", role: .cancel) { }
+                    sortDialogButtons
                 }
                 .navigationDestination(item: $selectedUser) { user in
                     UserCardView(user: user)
                 }
         }
     }
-    
+       
     @ViewBuilder
     private var content: some View {
         switch viewModel.state {
         case .loading:
-            ProgressView()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            
+            loadingView
         case .empty:
-            Text("Нет пользователей")
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            
+            emptyView
         case .error(let message):
-            VStack(spacing: 12) {
-                Text("Ошибка загрузки")
-                Text(message)
-                    .font(.caption)
-                    .multilineTextAlignment(.center)
-                Button("Повторить") {
-                    viewModel.retry()
-                }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            
+            errorView(message: message)
         case .content:
-            List {
-                ForEach(Array(viewModel.users.enumerated()), id: \.element.id) { offset, user in
-                    StatisticsRowView(index: offset + 1, user: user)
-                        .contentShape(Rectangle())
-                        .onTapGesture { selectedUser = user }
-                        .listRowSeparator(.hidden)
-                        .listRowInsets(EdgeInsets(top: 6, leading: 20, bottom: 6, trailing: 20))
-                        .listRowBackground(Color.clear)
-                }
-            }
-            .listStyle(.plain)
-            .scrollContentBackground(.hidden)
-            .background(Color.white)
+            usersListView
         }
+    }
+    
+    @ToolbarContentBuilder
+    private var toolbarContent: some ToolbarContent {
+        ToolbarItem(placement: .topBarTrailing) {
+            sortButton
+        }
+    }
+    
+    private var sortButton: some View {
+        Button { isSortSheetPresented = true } label: {
+            Image(systemName: "line.3.horizontal")
+        }
+    }
+    
+    private var sortDialogButtons: some View {
+        Group {
+            Button(StatisticsSortOption.byName.title) {
+                viewModel.setSort(.byName)
+            }
+            Button(StatisticsSortOption.byScore.title) {
+                viewModel.setSort(.byScore)
+            }
+            Button("Закрыть", role: .cancel) { }
+        }
+    }
+
+    private var loadingView: some View {
+        ProgressView()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+    
+    private var emptyView: some View {
+        Text("Нет пользователей")
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+    
+    private func errorView(message: String) -> some View {
+        VStack(spacing: 12) {
+            errorTitleText
+            errorMessageText(message)
+            retryButton
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+    
+    private var errorTitleText: some View {
+        Text("Ошибка загрузки")
+    }
+    
+    private func errorMessageText(_ message: String) -> some View {
+        Text(message)
+            .font(.caption)
+            .multilineTextAlignment(.center)
+    }
+    
+    private var retryButton: some View {
+        Button("Повторить") {
+            viewModel.retry()
+        }
+    }
+  
+    private var usersListView: some View {
+        List {
+            usersListContent
+        }
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .background(Color.white)
+    }
+    
+    private var usersListContent: some View {
+        ForEach(Array(viewModel.users.enumerated()), id: \.element.id) { offset, user in
+            userRowView(index: offset + 1, user: user)
+                .listRowSeparator(.hidden)
+                .listRowInsets(edgeInsets)
+                .listRowBackground(Color.clear)
+        }
+    }
+    
+    private func userRowView(index: Int, user: StatisticsUser) -> some View {
+        StatisticsCellView(index: index, user: user)
+            .contentShape(Rectangle())
+            .onTapGesture { selectedUser = user }
+    }
+    
+    private var edgeInsets: EdgeInsets {
+        EdgeInsets(top: 6, leading: 20, bottom: 6, trailing: 20)
     }
 }

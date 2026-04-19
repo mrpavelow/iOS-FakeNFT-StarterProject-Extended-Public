@@ -38,9 +38,7 @@ final class StatisticsViewModel {
     func retry() {
         Task { await loadUsers() }
     }
-    
-    // MARK: - Private
-    
+
     private func loadUsers() async {
         state = .loading
         
