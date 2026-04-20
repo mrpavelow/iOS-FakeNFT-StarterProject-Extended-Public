@@ -6,9 +6,15 @@
 //
 import Foundation
 
+/// Протокол клиента для работы с API
 protocol APIClientProtocol {
+    /// Загружает NFT по id
     func fetchNFT(id: String) async throws -> NFTItem
+    
+    /// Загружает список пользователей с возможностью сортировки и пагинации
     func fetchUsers(sortBy: String?, page: Int?, size: Int?) async throws -> [UserDTO]
+    
+    /// Загружает пользователя по id
     func fetchUser(id: String) async throws -> UserDTO
 }
 
@@ -36,10 +42,12 @@ actor APIClient: APIClientProtocol {
         
         var request = URLRequest(url: url)
         request.httpMethod = endpoint.method
-        if endpoint.body != nil {
+        
+        if let body = endpoint.body {
+            request.httpBody = body
             request.setValue(endpoint.contentType, forHTTPHeaderField: "Content-Type")
         }
-        request.addValue(RequestConstants.apiToken, forHTTPHeaderField: "X-Practicum-Mobile-Token")
+        request.addValue(RequestConstants.apiToken, forHTTPHeaderField: RequestConstants.token)
         request.httpBody = endpoint.body
         
         let data: Data

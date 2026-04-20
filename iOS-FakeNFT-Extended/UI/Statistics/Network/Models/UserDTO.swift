@@ -6,12 +6,25 @@
 //
 import Foundation
 
+/// DTO пользователя, приходящий с сервера
 struct UserDTO: Decodable, Hashable {
+    
+    /// Имя пользователя
     let name: String?
+    
+    /// Ссылка на аватар пользователя (строка с URL)
     let avatar: String?
+    
+    /// Описание профиля
     let description: String?
+    
+    /// Сайт пользователя
     let website: String?
+    
+    /// Список NFT (id или ссылки)
     let nfts: [String]?
+    
+    /// Уникальный идентификатор пользователя
     let id: String?
 }
 
