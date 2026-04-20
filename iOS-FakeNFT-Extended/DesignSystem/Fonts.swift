@@ -16,6 +16,8 @@ extension UIFont {
     // Caption Fonts
     static var caption1 = UIFont.systemFont(ofSize: 15, weight: .regular)
     static var caption2 = UIFont.systemFont(ofSize: 13, weight: .regular)
+    
+    static var price1 = UIFont.systemFont(ofSize: 10, weight: .medium)
 }
 
 extension Font {
@@ -29,4 +31,6 @@ extension Font {
     
     static var caption1: Font { Font(UIFont.caption1) }
     static var caption2: Font { Font(UIFont.caption2) }
+    
+    static var price1: Font { Font(UIFont.price1) }
 }

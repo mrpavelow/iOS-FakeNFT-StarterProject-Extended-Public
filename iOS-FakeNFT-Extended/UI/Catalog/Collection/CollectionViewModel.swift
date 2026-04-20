@@ -75,14 +75,8 @@ final class CollectionViewModel: ObservableObject {
     }
     
     private func loadNfts(ids: [String]) async throws -> [Nft] {
-        var uniqueIds: [String] = []
         var seen = Set<String>()
-        
-        for id in ids {
-            if seen.insert(id).inserted {
-                uniqueIds.append(id)
-            }
-        }
+        let uniqueIds = ids.filter { seen.insert($0).inserted }
         
         return try await withThrowingTaskGroup(of: Nft.self) { group in
             for id in uniqueIds {

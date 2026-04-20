@@ -21,38 +21,33 @@ struct CollectionNftCardView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 
                 Button(action: onLikeTap) {
-                    Image(systemName: model.isLiked ? "heart.fill" : "heart")
-                        .font(.system(size: 18))
-                        .foregroundStyle(model.isLiked ? .red : .white)
-                        .frame(width: 32, height: 32)
-                        .background(Color.black.opacity(0.15))
-                        .clipShape(Circle())
+                    Image(model.isLiked ? .heart : .heartBlank)
+                        .frame(width: 40, height: 40)
                 }
-                .padding(8)
             }
             
             HStack(spacing: 2) {
                 ForEach(1...5, id: \.self) { index in
-                    Image(systemName: index <= model.rating ? "star.fill" : "star")
+                    Image(index <= model.rating ? .stars : .starsBlank)
                         .font(.system(size: 10))
                         .foregroundStyle(index <= model.rating ? .yellow : Color(.systemGray4))
                 }
             }
             
             Text(model.name)
-                .font(.headline4)
+                .font(.bodyBold)
                 .foregroundStyle(Color(.textPrimary))
                 .lineLimit(1)
             
-            HStack(alignment: .center) {
+            HStack {
                 Text(model.priceText)
-                    .font(.caption1)
+                    .font(.price1)
                     .foregroundStyle(Color(.textPrimary))
                 
-                Spacer(minLength: 8)
+                Spacer()
                 
                 Button(action: onCartTap) {
-                    Image(systemName: model.isInCart ? "xmark.square" : "bag")
+                    Image(model.isInCart ? .cartX : .cart)
                         .font(.system(size: 20))
                         .foregroundStyle(Color(.label))
                         .frame(width: 16, height: 19)

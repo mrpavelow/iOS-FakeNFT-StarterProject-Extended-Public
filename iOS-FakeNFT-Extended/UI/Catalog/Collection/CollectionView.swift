@@ -16,37 +16,46 @@ struct CollectionView: View {
     }
     
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                CollectionHeaderView(
-                    collection: viewModel.collection,
-                    authorURL: viewModel.authorURL,
-                    onAuthorTap: {
-                        guard viewModel.authorURL != nil else { return }
-                        isAuthorWebViewPresented = true
-                    },
-                )
-                
-                content
+        ZStack(alignment: .topLeading) {
+            
+            ScrollView {
+                VStack(alignment: .leading, spacing: 24) {
+                    CollectionHeaderView(
+                        collection: viewModel.collection,
+                        authorURL: viewModel.authorURL,
+                        onAuthorTap: {
+                            guard viewModel.authorURL != nil else { return }
+                            isAuthorWebViewPresented = true
+                        }
+                    )
+                    .padding(.horizontal, 16)
+                    
+                    content
+                        .padding(.horizontal, 16)
+                }
+                .padding(.bottom, 24)
             }
-            .padding(.horizontal, 16)
-            .padding(.top, 8)
-            .padding(.bottom, 24)
+            .ignoresSafeArea(edges: .top)
+            .background(Color(.systemBackground))
+            backButton
         }
-        .navigationBarTitleDisplayMode(.inline)
-        .background(Color(.systemBackground))
+        .toolbar(.hidden, for: .tabBar)
+        .toolbar(.hidden, for: .navigationBar)
+        .navigationBarBackButtonHidden(true)
         .task {
             viewModel.loadIfNeeded()
         }
-        .sheet(isPresented: $isAuthorWebViewPresented) {
+        .fullScreenCover(isPresented: $isAuthorWebViewPresented) {
             if let url = viewModel.authorURL {
                 NavigationStack {
                     AuthorWebView(url: url)
                         .ignoresSafeArea(edges: .bottom)
                         .toolbar {
                             ToolbarItem(placement: .topBarLeading) {
-                                Button("Закрыть") {
+                                Button {
                                     isAuthorWebViewPresented = false
+                                } label: {
+                                    Image(systemName: "chevron.left")
                                 }
                             }
                         }
@@ -93,5 +102,20 @@ struct CollectionView: View {
                 }
             }
         }
+    }
+    
+    private var backButton: some View {
+        Button {
+            dismiss()
+        } label: {
+            Image(systemName: "chevron.left")
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(.black)
+                .frame(width: 40, height: 40)
+                .background(Color(.systemBackground).opacity(0.9))
+                .clipShape(Circle())
+        }
+        .padding(.leading, 16)
+        .padding(.top, 16)
     }
 }
