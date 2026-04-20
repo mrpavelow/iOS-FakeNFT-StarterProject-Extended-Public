@@ -7,71 +7,95 @@
 import SwiftUI
 
 struct StatisticsCellView: View {
-    
     let index: Int
     let user: StatisticsUser
     
-    // MARK: - Body
-    
     var body: some View {
         HStack(alignment: .center, spacing: 12) {
-            indexView
-            contentView
+            indexText
+            userCard
         }
     }
     
-    // MARK: - Private Views
-    
-    private var indexView: some View {
+    private var indexText: some View {
         Text("\(index)")
-            .font(.system(size: 15, weight: .regular))
+            .font(.system(size: 15))
             .foregroundStyle(.secondary)
             .frame(width: 24, alignment: .leading)
     }
     
-    private var contentView: some View {
+    private var userCard: some View {
         HStack(spacing: 12) {
-            avatarView
-            nameView
+            userAvatar
+            userNameText
             Spacer()
-            scoreView
+            userScoreText
         }
         .padding(.horizontal, 16)
         .frame(height: 80)
         .frame(maxWidth: .infinity)
         .background(Color.ypLightGrayDay)
-        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .clipShape(cardShape)
     }
     
-    private var avatarView: some View {
-        Image(systemName: user.avatarSystemName ?? "person.crop.circle.fill")
+    private var cardShape: RoundedRectangle {
+        RoundedRectangle(cornerRadius: 12)
+    }
+    
+    private var userAvatar: some View {
+        Group {
+            if let avatarURL = user.avatarURL {
+                asyncAvatar(url: avatarURL)
+            } else {
+                placeholderAvatar
+            }
+        }
+        .frame(width: 28, height: 28)
+        .clipShape(Circle())
+    }
+    
+    private func asyncAvatar(url: URL) -> some View {
+        AsyncImage(url: url) { image in
+            image
+                .resizable()
+                .scaledToFill()
+        } placeholder: {
+            ProgressView()
+        }
+    }
+    
+    private var placeholderAvatar: some View {
+        Image(systemName: "person.crop.circle.fill")
             .resizable()
             .scaledToFit()
-            .frame(width: 28, height: 28)
             .foregroundStyle(.secondary)
     }
     
-    private var nameView: some View {
+    private var userNameText: some View {
         Text(user.name)
             .font(.headline)
+            .lineLimit(1)
     }
     
-    private var scoreView: some View {
+    private var userScoreText: some View {
         Text("\(user.score)")
             .font(.system(size: 22, weight: .bold))
     }
 }
 
-// MARK: - Preview
-
 #Preview {
-    StatisticsCellView(
-        index: 1,
-        user: StatisticsUser(
-            id: "1",
-            name: "Алиса",
-            score: 1234,
-            avatarSystemName: "person.crop.circle.fill"
-        )
+    let mockUser = StatisticsUser(
+        id: "1",
+        name: "Иван Иванов",
+        score: 15,
+        description: " ",
+        website: "https://example.com",
+        avatarURL: URL(string: "https://picsum.photos/400/400?random=1"),
+        nftIds: ["1"]
     )
+    return VStack {
+        StatisticsCellView(index: 1, user: mockUser)
+    }
+    .padding()
+    .background(Color.white)
 }
