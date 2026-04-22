@@ -1,30 +1,19 @@
 import Foundation
 
-final class ProfileServiceImp: ProfileService {
+actor ProfileServiceImp: ProfileService {
     private let networkClient: NetworkClient
-    private let callbackQueue: DispatchQueue
     
-    init(
-        networkClient: NetworkClient,
-        callbackQueue: DispatchQueue = .main
-    ) {
+    init(networkClient: NetworkClient) {
         self.networkClient = networkClient
-        self.callbackQueue = callbackQueue
     }
     
-    func loadProfile(completion: @escaping (Result<Profile, Error>) -> Void) {
-        Task {
-            do {
+    func loadProfile() async throws -> Profile {
                 let request = ProfileRequest()
-                let profile: Profile = try await networkClient.send(request: request)
-                callbackQueue.async {
-                    completion(.success(profile))
-                }
-            } catch {
-                callbackQueue.async {
-                    completion(.failure(error))
-                }
-            }
-        }
+                return try await networkClient.send(request: request)
+    }
+    
+    func saveProfile(profile: Profile) async throws -> Profile {
+            let request = ProfileRequest()
+            return try await networkClient.send(request: request)
     }
 }

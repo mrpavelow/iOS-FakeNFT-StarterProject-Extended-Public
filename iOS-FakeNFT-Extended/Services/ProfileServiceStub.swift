@@ -1,9 +1,13 @@
 import Foundation
 
 struct ProfileServiceStub: ProfileService {
-    let result: Result<Profile, Error>
+    let profile: Profile
     
-    func loadProfile(completion: @escaping (Result<Profile, Error>) -> Void) {
-        completion(result)
+    func loadProfile() async throws -> Profile {
+        return profile
+    }
+    
+    func saveProfile(profile: Profile) -> Profile {
+        return profile
     }
 }

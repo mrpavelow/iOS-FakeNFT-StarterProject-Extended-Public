@@ -1,5 +1,7 @@
 import Foundation
 
-protocol ProfileService {
-    func loadProfile(completion: @escaping (Result<Profile, Error>) -> Void)
+protocol ProfileService: Sendable {
+    func loadProfile() async throws -> Profile
+    
+    func saveProfile(profile: Profile) async throws -> Profile
 }
