@@ -1,6 +1,6 @@
 import Foundation
 
-struct NftCollection: Decodable, Identifiable, Hashable {
+struct NftCollection: Decodable, Identifiable, Hashable, Sendable {
     let id: String
     let name: String
     let cover: URL
