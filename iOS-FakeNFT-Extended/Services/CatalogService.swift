@@ -1,5 +1,5 @@
 import Foundation
 
-protocol CatalogService {
-    func loadCollections(completion: @escaping (Result<[NftCollection], Error>) -> Void)
+protocol CatalogService: Sendable {
+    func loadCollections() async throws -> [NftCollection]
 }

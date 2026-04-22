@@ -1,30 +1,14 @@
 import Foundation
 
-final class CatalogServiceImpl: CatalogService {
+actor CatalogServiceImpl: CatalogService {
     private let networkClient: NetworkClient
-    private let callbackQueue: DispatchQueue
     
-    init(
-        networkClient: NetworkClient,
-        callbackQueue: DispatchQueue = .main
-    ) {
+    init(networkClient: NetworkClient) {
         self.networkClient = networkClient
-        self.callbackQueue = callbackQueue
     }
     
-    func loadCollections(completion: @escaping (Result<[NftCollection], Error>) -> Void) {
-        Task {
-            do {
-                let request = CollectionsRequest()
-                let collections: [NftCollection] = try await networkClient.send(request: request)
-                callbackQueue.async {
-                    completion(.success(collections))
-                }
-            } catch {
-                callbackQueue.async {
-                    completion(.failure(error))
-                }
-            }
-        }
+    func loadCollections() async throws -> [NftCollection] {
+        let request = CollectionsRequest()
+        return try await networkClient.send(request: request)
     }
 }
