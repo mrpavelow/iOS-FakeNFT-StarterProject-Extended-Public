@@ -90,15 +90,20 @@ struct CollectionView: View {
         case .loaded:
             LazyVGrid(columns: columns, alignment: .leading, spacing: 16) {
                 ForEach(viewModel.items) { item in
-                    CollectionNftCardView(
-                        model: item,
-                        onLikeTap: {
-                            viewModel.toggleLike(for: item.id)
-                        },
-                        onCartTap: {
-                            viewModel.toggleCart(for: item.id)
-                        }
-                    )
+                    NavigationLink {
+                        NftDetailBridgeView(nftId: item.id)
+                    } label: {
+                        CollectionNftCardView(
+                            model: item,
+                            onLikeTap: {
+                                viewModel.toggleLike(for: item.id)
+                            },
+                            onCartTap: {
+                                viewModel.toggleCart(for: item.id)
+                            }
+                        )
+                    }
+                    .buttonStyle(.plain)
                 }
             }
         }
