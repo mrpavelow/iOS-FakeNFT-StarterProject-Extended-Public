@@ -1,6 +1,7 @@
 import Foundation
 import Combine
 
+@MainActor
 final class CatalogViewModel: ObservableObject {
     
     enum SortOption: String, CaseIterable, Identifiable {
@@ -51,22 +52,35 @@ final class CatalogViewModel: ObservableObject {
     }
     
     func loadCollections() {
-        guard case .loading = state else {
-            state = .loading
-            
-            catalogService.loadCollections { [weak self] result in
-                guard let self else { return }
-                
-                switch result {
-                case .success(let collections):
-                    self.collections = collections
-                    self.state = .loaded
-                case .failure:
-                    self.state = .failed("Не удалось загрузить коллекции")
-                }
+        guard case .idle = state else {
+            if case .failed = state {
+                reloadCollections()
             }
-            
             return
+        }
+        
+        state = .loading
+        
+        Task {
+            do {
+                collections = try await catalogService.loadCollections()
+                state = .loaded
+            } catch {
+                state = .failed("Не удалось загрузить коллекции")
+            }
+        }
+    }
+    
+    func reloadCollections() {
+        state = .loading
+        
+        Task {
+            do {
+                collections = try await catalogService.loadCollections()
+                state = .loaded
+            } catch {
+                state = .failed("Не удалось загрузить коллекции")
+            }
         }
     }
     
