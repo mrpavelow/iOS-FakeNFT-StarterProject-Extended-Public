@@ -1,7 +1,7 @@
 import SwiftUI
 
-struct FavouritesCardView: View {
-    let model: FavouritesCardModel
+struct MyNftsCardView: View {
+    let model: MyNftsCardModel
     
     var body: some View {
         HStack(spacing: 12) {
@@ -13,7 +13,7 @@ struct FavouritesCardView: View {
                 RoundedRectangle(cornerRadius: 12)
                     .fill(Color(.secondarySystemBackground))
             }
-            .frame(width: 80, height: 80)
+            .frame(width: 108, height: 108)
             .clipShape(RoundedRectangle(cornerRadius: 12))
             VStack(alignment: .leading) {
                 Text(model.name)
@@ -30,26 +30,43 @@ struct FavouritesCardView: View {
                 }
                 Spacer().frame(height: 8)
                 HStack {
-                    Text("\(String(format: "%.2f", model.price)) ETH")
+                    Text("от")
                         .font(.caption1)
                         .foregroundStyle(Color(.textPrimary))
-                    
+                    Text(model.author)
+                        .font(.caption1)
+                        .foregroundStyle(Color(.textPrimary))
                     Spacer(minLength: 8)
                 }
             }
+            Spacer()
+            VStack {
+                HStack {
+                    VStack(alignment: .leading) {
+                        Text("Цена")
+                            .font(.caption1)
+                            .foregroundStyle(Color(.textPrimary))
+                        Text("\(String(format: "%.2f", model.price)) ETH")
+                            .font(.headline4)
+                            .foregroundStyle(Color(.textPrimary))
+                    }
+                }
+            }
+
         }
-        .frame(height: 80)
+        .frame(height: 140)
     }
 }
 
 #Preview {
-    FavouritesCardView(
-        model: FavouritesCardModel(
+    MyNftsCardView(
+        model: MyNftsCardModel(
             id: "1",
             name: "Archie",
             imageURL: URL(string: "https://code.s3.yandex.net/Mobile/iOS/NFT/Peach/Biscuit/1.png"),
             rating: 3,
-            price: 2.3,
+            price: 1.40,
+            author: "Автор",
         ),
     )
     .padding()

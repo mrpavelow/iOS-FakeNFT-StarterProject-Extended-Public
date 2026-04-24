@@ -86,7 +86,8 @@ struct ProfileView: View {
                     Spacer()
                         .frame(height: 40)
                     NavigationLink {
-                        
+                        MyNftsView(viewModel: MyNftsViewModel(
+                            myNftsService: MyNftsServiceStub(nfts: MockData.mockNfts), myNftIds: []))
                     } label: {
                         navigationButtonLabel(title: "Мои NFT", count: viewModel.profile?.nfts.count ?? 0)
                     }

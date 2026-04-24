@@ -15,9 +15,9 @@ enum MockData {
         return Nft(createdAt: "werwer",
                    name: "sdfsdfs sdfsdfs sdfsdfs sdfsdfs",
                    images: [URL(string: "https://code.s3.yandex.net/Mobile/iOS/NFT/Peach/Biscuit/1.png")!],
-                   rating: 3,
+                   rating: Int.random(in: 1..<6),
                    description: "dfsdfd",
-                   price: 34.3,
+                   price: Float.random(in: 1..<100),
                    author: "Author",
                    website: "https://apple.com",
                    id: "\(Int.random(in: 1..<1000))")
