@@ -1,9 +1,3 @@
-//
-//  ProfileView.swift
-//  iOS-FakeNFT-Extended
-//
-//  Created by   Дмитрий Кривенко on 10.04.2026.
-//
 import SwiftUI
 
 struct ProfileView: View {
@@ -17,26 +11,18 @@ struct ProfileView: View {
         NavigationStack {
             content
                 .toolbar {
-                    if #available(iOS 26.0, *) {
-                        ToolbarItem(placement: .topBarTrailing) {
-                            NavigationLink {
-                                
-                            } label: {
-                                Image(systemName: "square.and.pencil")
-                            }
-                        }
-                        .sharedBackgroundVisibility(.hidden)
-                    } else {
-                        ToolbarItem(placement: .topBarTrailing) {
-                            NavigationLink {
-                                
-                            } label: {
-                                Image(systemName: "square.and.pencil")
-                            }
+                    ToolbarItem(placement: .topBarTrailing) {
+                        NavigationLink {
+                            ProfileEditView(
+                                viewModel: ProfileEditViewModel(
+                                    profileService: ProfileServiceStub(profile: MockData.mockProfile), profile: MockData.mockProfile)
+                            )
+                            .navigationBarBackButtonHidden(true)
+                        } label: {
+                            Image(systemName: "square.and.pencil")
                         }
                     }
                 }
-                .toolbarBackground(.hidden)
         }
         .onAppear {
             if case .idle = viewModel.state {
@@ -63,16 +49,16 @@ struct ProfileView: View {
         case .loaded:
             ScrollView {
                 VStack(alignment: .leading) {
-                    HStack() {
+                    HStack {
                         Spacer()
                     }
-                    HStack() {
+                    HStack {
                         if let avatarURL = viewModel.profile?.avatar {
-                            AsyncImage(url: URL(string: avatarURL.relativePath)) { image in
+                            AsyncImage(url: URL(string: avatarURL)) { image in
                                 image
                                     .resizable()
                                     .aspectRatio(contentMode: .fill)
-                                    .frame(width: 70, height: 70, alignment: .center)
+                                    .frame(width: 70, height: 70)
                                     .clipShape(Circle())
                             } placeholder: {
                                 avatarPlaceholder
@@ -92,15 +78,26 @@ struct ProfileView: View {
                     NavigationLink {
                         
                     } label: {
-                        Text(viewModel.profile?.website?.relativePath ?? "")
+                        Text(viewModel.profile?.website ?? "")
                             .font(.caption1)
                             .foregroundStyle(.blue)
                     }
                     .buttonStyle(.plain)
                     Spacer()
                         .frame(height: 40)
-                    navigationButton(title: "Мои NFT", count: viewModel.profile?.nfts.count ?? 0)
-                    navigationButton(title: "Избранные", count: viewModel.profile?.likes.count ?? 0)
+                    NavigationLink {
+                        
+                    } label: {
+                        navigationButtonLabel(title: "Мои NFT", count: viewModel.profile?.nfts.count ?? 0)
+                    }
+                    .buttonStyle(.plain)
+                    NavigationLink {
+                        FavouritesView(viewModel: FavouritesViewModel(
+                            favouritesService: FavouritesServiceStub(nfts: MockData.mockNfts), likes: []))
+                    } label: {
+                        navigationButtonLabel(title: "Избранные", count: viewModel.profile?.likes.count ?? 0)
+                    }
+                    .buttonStyle(.plain)
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 12)
@@ -114,36 +111,32 @@ struct ProfileView: View {
         Image(systemName: "person.crop.circle.fill")
             .background(
                 Circle()
-                    .frame(width: 70, height: 70, alignment: .center)
+                    .frame(width: 70, height: 70)
             )
-            .frame(width: 70, height: 70, alignment: .center)
+            .frame(width: 70, height: 70)
     }
     
     @ViewBuilder
-    func navigationButton(title: String, count: Int) -> some View {
-        NavigationLink {
-            
-        } label: {
-            HStack {
-                Text(title)
-                    .font(.bodyBold)
-                Spacer()
-                    .frame(width: 8)
-                Text("(\(count))")
-                    .font(.bodyBold)
-                Spacer()
-                Image(systemName: "chevron.forward")
-            }
-            .padding(.vertical, 16)
+    func navigationButtonLabel(title: String, count: Int) -> some View {
+        HStack {
+            Text(title)
+                .font(.bodyBold)
+            Spacer()
+                .frame(width: 8)
+            Text("(\(count))")
+                .font(.bodyBold)
+            Spacer()
+            Image(systemName: "chevron.forward")
         }
-        .buttonStyle(.plain)
+        .padding(.vertical, 16)
+        .frame(maxWidth: .infinity)
     }
 }
 
 #Preview {
     ProfileView(
         viewModel: ProfileViewModel(
-            profileService: ProfileServiceStub(result: .success(Profile.getMock()))
+            profileService: ProfileServiceStub(profile: MockData.mockProfile)
         )
     )
 }
