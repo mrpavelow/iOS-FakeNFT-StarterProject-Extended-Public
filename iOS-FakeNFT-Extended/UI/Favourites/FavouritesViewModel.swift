@@ -45,7 +45,7 @@ final class FavouritesViewModel: ObservableObject {
                                        name: nft.name,
                                        imageURL: imageURL,
                                        rating: nft.rating,
-                                       priceText: "\(nft.price) ETH")
+                                       price: nft.price)
         }
     }
 }

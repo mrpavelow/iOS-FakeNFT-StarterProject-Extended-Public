@@ -30,7 +30,7 @@ struct FavouritesCardView: View {
                 }
                 Spacer().frame(height: 8)
                 HStack {
-                    Text(model.priceText)
+                    Text("\(model.price) ETH")
                         .font(.caption1)
                         .foregroundStyle(Color(.textPrimary))
                     
@@ -49,7 +49,7 @@ struct FavouritesCardView: View {
             name: "Archie",
             imageURL: URL(string: "https://code.s3.yandex.net/Mobile/iOS/NFT/Peach/Biscuit/1.png"),
             rating: 3,
-            priceText: "1 ETH",
+            price: 1,
         ),
     )
     .padding()

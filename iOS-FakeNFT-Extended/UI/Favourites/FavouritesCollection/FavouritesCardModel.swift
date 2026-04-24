@@ -5,5 +5,5 @@ struct FavouritesCardModel: Identifiable, Hashable {
     let name: String
     let imageURL: URL?
     let rating: Int
-    let priceText: String
+    let price: Float
 }
