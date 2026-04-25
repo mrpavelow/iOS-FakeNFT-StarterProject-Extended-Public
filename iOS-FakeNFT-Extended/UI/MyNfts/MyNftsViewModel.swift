@@ -1,5 +1,4 @@
 import Foundation
-import Combine
 
 @MainActor
 final class MyNftsViewModel: ObservableObject {
@@ -35,7 +34,6 @@ final class MyNftsViewModel: ObservableObject {
     @Published private(set) var state: State = .idle
     @Published private(set) var myNfts: [MyNftsCardModel] = []
     @Published var showOrderMenu: Bool = false
-    
     
     init(myNftsService: MyNftsService, myNftIds: [String]) {
         self.myNftsService = myNftsService
