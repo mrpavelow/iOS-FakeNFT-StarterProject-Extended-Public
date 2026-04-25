@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ProfileView: View {
     @StateObject private var viewModel: ProfileViewModel
+    @State private var isAuthorWebViewPresented = false
     
     init(viewModel: ProfileViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
@@ -10,23 +11,27 @@ struct ProfileView: View {
     var body: some View {
         NavigationStack {
             content
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        NavigationLink {
-                            ProfileEditView(
-                                viewModel: ProfileEditViewModel(
-                                    profileService: ProfileServiceStub(profile: MockData.mockProfile), profile: MockData.mockProfile)
-                            )
-                            .navigationBarBackButtonHidden(true)
-                        } label: {
-                            Image(systemName: "square.and.pencil")
-                        }
-                    }
-                }
         }
         .onAppear {
             if case .idle = viewModel.state {
                 viewModel.loadProfile()
+            }
+        }
+        .fullScreenCover(isPresented: $isAuthorWebViewPresented) {
+            if let profileURL = URL(string: viewModel.profile?.website ?? "") {
+                NavigationStack {
+                    AuthorWebView(url: profileURL)
+                        .ignoresSafeArea(edges: .bottom)
+                        .toolbar {
+                            ToolbarItem(placement: .topBarLeading) {
+                                Button {
+                                    isAuthorWebViewPresented = false
+                                } label: {
+                                    Image(systemName: "chevron.left")
+                                }
+                            }
+                        }
+                }
             }
         }
     }
@@ -75,8 +80,9 @@ struct ProfileView: View {
                     Text(viewModel.profile?.description ?? "")
                         .font(.caption2)
                     Spacer().frame(height: 8)
-                    NavigationLink {
-                        
+                    Button {
+                        guard URL(string: viewModel.profile?.website ?? "") != nil else { return }
+                        isAuthorWebViewPresented = true
                     } label: {
                         Text(viewModel.profile?.website ?? "")
                             .font(.caption1)
@@ -87,14 +93,16 @@ struct ProfileView: View {
                         .frame(height: 40)
                     NavigationLink {
                         MyNftsView(viewModel: MyNftsViewModel(
-                            myNftsService: MyNftsServiceStub(nfts: MockData.mockNfts), myNftIds: []))
+                            myNftsService: MyNftsServiceImp(networkClient: DefaultNetworkClient()), myNftIds: viewModel.profile?.likes ?? []))
+                        .toolbar(.hidden, for: .tabBar)
                     } label: {
                         navigationButtonLabel(title: "Мои NFT", count: viewModel.profile?.nfts.count ?? 0)
                     }
                     .buttonStyle(.plain)
                     NavigationLink {
                         FavouritesView(viewModel: FavouritesViewModel(
-                            favouritesService: FavouritesServiceStub(nfts: MockData.mockNfts), likes: []))
+                            favouritesService: FavouritesServiceImp(networkClient: DefaultNetworkClient()), likes: viewModel.profile?.likes ?? []))
+                        .toolbar(.hidden, for: .tabBar)
                     } label: {
                         navigationButtonLabel(title: "Избранные", count: viewModel.profile?.likes.count ?? 0)
                     }
@@ -104,6 +112,22 @@ struct ProfileView: View {
                 .padding(.bottom, 12)
             }
             .background(.white)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink {
+                        if let profile = viewModel.profile {
+                            ProfileEditView(
+                                viewModel: ProfileEditViewModel(
+                                    profileService: ProfileServiceImp(networkClient: DefaultNetworkClient()), profile: profile)
+                            )
+                            .navigationBarBackButtonHidden(true)
+                            .toolbar(.hidden, for: .tabBar)
+                        }
+                    } label: {
+                        Image(systemName: "square.and.pencil")
+                    }
+                }
+            }
         }
     }
     

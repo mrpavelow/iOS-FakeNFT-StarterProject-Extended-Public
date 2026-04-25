@@ -28,19 +28,18 @@ struct ProfileEditView: View {
                         dismiss()
                     }
                 }
-            if viewModel.profileIsChanged {
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
                 Button {
-                    viewModel.saveProfile()
+                    if (viewModel.profileIsChanged) {
+                        viewModel.showEditAlert = true
+                    } else {
+                        dismiss()
+                    }
                 } label: {
-                    Text("Сохранить")
-                        .frame(maxWidth: .infinity, minHeight: 60)
+                    Image(systemName: "chevron.left")
                 }
-                .font(.bodyBold)
-                .foregroundStyle(.white)
-                .background(Color(uiColor: .closeButton))
-                .cornerRadius(16)
-                .padding(.horizontal, 16)
-                .padding(.bottom, 16)
             }
         }
     }
@@ -106,18 +105,19 @@ struct ProfileEditView: View {
                 .padding(.bottom, 12)
             }
             .background(.white)
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button {
-                        if (viewModel.profileIsChanged) {
-                            viewModel.showEditAlert = true
-                        } else {
-                            dismiss()
-                        }
-                    } label: {
-                        Image(systemName: "chevron.left")
-                    }
+            if viewModel.profileIsChanged {
+                Button {
+                    viewModel.saveProfile()
+                } label: {
+                    Text("Сохранить")
+                        .frame(maxWidth: .infinity, minHeight: 60)
                 }
+                .font(.bodyBold)
+                .foregroundStyle(.white)
+                .background(Color(uiColor: .closeButton))
+                .cornerRadius(16)
+                .padding(.horizontal, 16)
+                .padding(.bottom, 16)
             }
         }
     }

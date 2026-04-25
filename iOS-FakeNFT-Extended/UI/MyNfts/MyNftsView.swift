@@ -3,6 +3,7 @@ import SwiftUI
 struct MyNftsView: View {
     @StateObject private var viewModel: MyNftsViewModel
     @Environment(\.dismiss) var dismiss
+    @AppStorage("myNftsOrderBy") private var myNftsOrderBy = OrderBy.name.rawValue
     
     init(viewModel: MyNftsViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
@@ -23,14 +24,17 @@ struct MyNftsView: View {
                             Button("По имени") {
                                 viewModel.orderBy = .name
                                 viewModel.showOrderMenu = false
+                                myNftsOrderBy = OrderBy.name.rawValue
                             }
                             Button("По цене") {
                                 viewModel.orderBy = .price
                                 viewModel.showOrderMenu = false
+                                myNftsOrderBy = OrderBy.price.rawValue
                             }
                             Button("По рейтингу") {
                                 viewModel.orderBy = .rating
                                 viewModel.showOrderMenu = false
+                                myNftsOrderBy = OrderBy.rating.rawValue
                             }
                         }
                     }
@@ -40,6 +44,7 @@ struct MyNftsView: View {
             if case .idle = viewModel.state {
                 viewModel.getMyNfts()
             }
+            viewModel.orderBy = OrderBy(rawValue: myNftsOrderBy) ?? .name
         }
     }
     

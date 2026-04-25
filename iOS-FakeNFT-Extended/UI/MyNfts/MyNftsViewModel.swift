@@ -9,12 +9,6 @@ final class MyNftsViewModel: ObservableObject {
         case failed(String)
     }
     
-    enum OrderBy {
-        case name
-        case price
-        case rating
-    }
-    
     var orderBy: OrderBy = .name {
         didSet {
             switch orderBy {
@@ -68,4 +62,10 @@ final class MyNftsViewModel: ObservableObject {
                                    author: nft.author ?? "")
         }
     }
+}
+
+enum OrderBy: String {
+    case name
+    case price
+    case rating
 }

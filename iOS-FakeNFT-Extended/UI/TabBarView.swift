@@ -3,7 +3,7 @@ import SwiftUI
 struct TabBarView: View {
     var body: some View {
         TabView {
-            ProfileView(viewModel: ProfileViewModel(profileService: ProfileServiceStub(profile: MockData.mockProfile)))
+            ProfileView(viewModel: ProfileViewModel(profileService: ProfileServiceImp(networkClient: DefaultNetworkClient())))
                 .tabItem {
                     Label(
                         NSLocalizedString("Tab.profile", comment: ""),

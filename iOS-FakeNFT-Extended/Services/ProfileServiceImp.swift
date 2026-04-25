@@ -8,12 +8,16 @@ actor ProfileServiceImp: ProfileService {
     }
     
     func loadProfile() async throws -> Profile {
-                let request = ProfileRequest()
+                let request = GetProfileRequest()
                 return try await networkClient.send(request: request)
     }
     
     func saveProfile(profile: Profile) async throws -> Profile {
-            let request = ProfileRequest()
+        let request = SaveProfileRequest(dto: ProfileDto(name: profile.name,
+                                                         avatar: profile.avatar,
+                                                         description: profile.description,
+                                                         website: profile.website,
+                                                         likes: profile.likes))
             return try await networkClient.send(request: request)
     }
 }
