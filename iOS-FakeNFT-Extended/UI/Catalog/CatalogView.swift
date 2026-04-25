@@ -19,7 +19,7 @@ struct CatalogView: View {
                         Button {
                             isSortDialogPresented = true
                         } label: {
-                            Image(systemName: "line.3.horizontal.decrease.circle")
+                            Image(systemName: "line.3.horizontal")
                         }
                     }
                 }
