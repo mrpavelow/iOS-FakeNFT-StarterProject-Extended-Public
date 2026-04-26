@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 @MainActor
 final class ProfileViewModel: ObservableObject {
@@ -23,8 +24,8 @@ final class ProfileViewModel: ObservableObject {
             state = .loading
             Task {
                 do {
-                    profile = try await profileService.loadProfile()
                     state = .loaded
+                    profile = try await profileService.loadProfile()
                 } catch {
                     state = .failed("Не удалось загрузить профиль")
                 }

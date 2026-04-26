@@ -69,7 +69,10 @@ struct MyNftsView: View {
                     LazyVStack(alignment: .leading, spacing: 10) {
                         ForEach(viewModel.myNfts) { item in
                             MyNftsCardView(
-                                model: item
+                                model: item,
+                                onLikeTap: {
+                                    viewModel.toggleLike(for: item.id)
+                                },
                             )
                         }
                     }
@@ -78,6 +81,7 @@ struct MyNftsView: View {
                 .padding(.horizontal)
                 .background(.white)
                 .scrollIndicators(.hidden)
+                .navigationTitle("Мои NFT")
             } else {
                 Text("У Вас ещё нет NFT")
                     .font(.bodyBold)
@@ -100,7 +104,7 @@ struct MyNftsView: View {
 #Preview {
     MyNftsView(
         viewModel: MyNftsViewModel(
-            myNftsService: MyNftsServiceStub(nfts: MockData.mockNfts), myNftIds: [])
+            nftService: NftServiceStub(nfts: MockData.mockNfts), myNftIds: [], likedNftIds: [])
     )
 }
 

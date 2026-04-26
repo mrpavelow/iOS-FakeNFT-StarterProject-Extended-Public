@@ -7,4 +7,5 @@ struct MyNftsCardModel: Identifiable, Hashable {
     let rating: Int
     let price: Float
     let author: String
+    var isLiked: Bool
 }

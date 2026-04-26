@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct ProfileView: View {
+    @Environment(ServicesAssembly.self) private var services: ServicesAssembly?
+    
     @StateObject private var viewModel: ProfileViewModel
     @State private var isAuthorWebViewPresented = false
     
@@ -11,10 +13,14 @@ struct ProfileView: View {
     var body: some View {
         NavigationStack {
             content
-        }
-        .onAppear {
-            if case .idle = viewModel.state {
-                viewModel.loadProfile()
+                .onAppear {
+                    if case .idle = viewModel.state {
+                        viewModel.loadProfile()
+                    }
+                    
+                    if case .loaded = viewModel.state {
+                        viewModel.loadProfile()
+                    }
             }
         }
         .fullScreenCover(isPresented: $isAuthorWebViewPresented) {
@@ -93,7 +99,7 @@ struct ProfileView: View {
                         .frame(height: 40)
                     NavigationLink {
                         MyNftsView(viewModel: MyNftsViewModel(
-                            myNftsService: MyNftsServiceImp(networkClient: DefaultNetworkClient()), myNftIds: viewModel.profile?.likes ?? []))
+                            nftService: services!.nftService, myNftIds: viewModel.profile?.nfts ?? [], likedNftIds: viewModel.profile?.likes ?? []))
                         .toolbar(.hidden, for: .tabBar)
                     } label: {
                         navigationButtonLabel(title: "Мои NFT", count: viewModel.profile?.nfts.count ?? 0)
@@ -101,7 +107,7 @@ struct ProfileView: View {
                     .buttonStyle(.plain)
                     NavigationLink {
                         FavouritesView(viewModel: FavouritesViewModel(
-                            favouritesService: FavouritesServiceImp(networkClient: DefaultNetworkClient()), likes: viewModel.profile?.likes ?? []))
+                            nftService: services!.nftService, likes: viewModel.profile?.likes ?? []))
                         .toolbar(.hidden, for: .tabBar)
                     } label: {
                         navigationButtonLabel(title: "Избранные", count: viewModel.profile?.likes.count ?? 0)

@@ -2,19 +2,27 @@ import SwiftUI
 
 struct MyNftsCardView: View {
     let model: MyNftsCardModel
+    let onLikeTap: () -> Void
     
     var body: some View {
         HStack(spacing: 12) {
-            AsyncImage(url: model.imageURL) { image in
-                image
-                    .resizable()
-                    .scaledToFill()
-            } placeholder: {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color(.secondarySystemBackground))
+            ZStack(alignment: .topTrailing) {
+                AsyncImage(url: model.imageURL) { image in
+                    image
+                        .resizable()
+                        .scaledToFill()
+                } placeholder: {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color(.secondarySystemBackground))
+                }
+                .frame(width: 108, height: 108)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                Button(action: onLikeTap) {
+                    Image(model.isLiked ? .heart : .heartBlank)
+                        .frame(width: 40, height: 40)
+                }
+                
             }
-            .frame(width: 108, height: 108)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
             VStack(alignment: .leading) {
                 Text(model.name)
                     .font(.headline4)
@@ -23,9 +31,8 @@ struct MyNftsCardView: View {
                 Spacer().frame(height: 4)
                 HStack(spacing: 2) {
                     ForEach(1...5, id: \.self) { index in
-                        Image(systemName: index <= model.rating ? "star.fill" : "star")
-                            .font(.system(size: 10))
-                            .foregroundStyle(index <= model.rating ? .yellow : Color(.systemGray4))
+                        Image(index <= model.rating ? .star : .starBlank)
+                            .frame(width: 12, height: 12)
                     }
                 }
                 Spacer().frame(height: 8)
@@ -52,7 +59,7 @@ struct MyNftsCardView: View {
                     }
                 }
             }
-
+            
         }
         .frame(height: 140)
     }
@@ -67,7 +74,9 @@ struct MyNftsCardView: View {
             rating: 3,
             price: 1.40,
             author: "Автор",
+            isLiked: true,
         ),
+        onLikeTap: {},
     )
     .padding()
     .background(Color(.systemBackground))

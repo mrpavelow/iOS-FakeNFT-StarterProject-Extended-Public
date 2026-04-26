@@ -6,4 +6,5 @@ struct FavouritesCardModel: Identifiable, Hashable {
     let imageURL: URL?
     let rating: Int
     let price: Float
+    var isLiked: Bool
 }

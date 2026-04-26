@@ -2,19 +2,27 @@ import SwiftUI
 
 struct FavouritesCardView: View {
     let model: FavouritesCardModel
+    let onLikeTap: () -> Void
     
     var body: some View {
         HStack(spacing: 12) {
-            AsyncImage(url: model.imageURL) { image in
-                image
-                    .resizable()
-                    .scaledToFill()
-            } placeholder: {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color(.secondarySystemBackground))
+            ZStack(alignment: .topTrailing) {
+                AsyncImage(url: model.imageURL) { image in
+                    image
+                        .resizable()
+                        .scaledToFill()
+                } placeholder: {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color(.secondarySystemBackground))
+                }
+                .frame(width: 80, height: 80)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                Button(action: onLikeTap) {
+                    Image(model.isLiked ? .heart : .heartBlank)
+                        .frame(width: 40, height: 40)
+                        .offset(x: 5, y: -5)
+                }
             }
-            .frame(width: 80, height: 80)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
             VStack(alignment: .leading) {
                 Text(model.name)
                     .font(.headline4)
@@ -23,14 +31,13 @@ struct FavouritesCardView: View {
                 Spacer().frame(height: 4)
                 HStack(spacing: 2) {
                     ForEach(1...5, id: \.self) { index in
-                        Image(systemName: index <= model.rating ? "star.fill" : "star")
-                            .font(.system(size: 10))
-                            .foregroundStyle(index <= model.rating ? .yellow : Color(.systemGray4))
+                        Image(index <= model.rating ? .star : .starBlank)
+                            .frame(width: 12, height: 12)
                     }
                 }
                 Spacer().frame(height: 8)
                 HStack {
-                    Text("\(model.price) ETH")
+                    Text("\(String(format: "%.2f", model.price)) ETH")
                         .font(.caption1)
                         .foregroundStyle(Color(.textPrimary))
                     
@@ -50,7 +57,9 @@ struct FavouritesCardView: View {
             imageURL: URL(string: "https://code.s3.yandex.net/Mobile/iOS/NFT/Peach/Biscuit/1.png"),
             rating: 3,
             price: 1,
+            isLiked: true,
         ),
+        onLikeTap: {}
     )
     .padding()
     .background(Color(.systemBackground))

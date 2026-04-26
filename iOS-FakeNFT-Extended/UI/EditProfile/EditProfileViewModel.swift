@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 @MainActor
 final class ProfileEditViewModel: ObservableObject {
@@ -30,8 +31,8 @@ final class ProfileEditViewModel: ObservableObject {
         self.website = profile.website
         self.avatar = profile.avatar
         
-        $name.combineLatest($description, $website, $avatar).map { name, description, website, avatar in
-            name != profile.name || description != profile.description || website != profile.website || avatar != profile.avatar
+        $name.combineLatest($description, $website, $avatar).map { [weak self] name, description, website, avatar in
+            name != self?.profile.name || description != self?.profile.description || website != self?.profile.website || avatar != self?.profile.avatar
         }.assign(to: &$profileIsChanged)
     }
     
@@ -50,6 +51,11 @@ final class ProfileEditViewModel: ObservableObject {
             Task {
                 do {
                     profile = try await profileService.saveProfile(profile: editedProfile)
+                    name = profile.name
+                    description = profile.description
+                    website = profile.website
+                    avatar = profile.avatar
+                    
                     state = .loaded
                 } catch {
                     state = .failed("Не удалось сохранить профиль")

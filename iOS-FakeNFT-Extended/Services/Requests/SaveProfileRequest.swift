@@ -5,5 +5,5 @@ struct SaveProfileRequest: NetworkRequest {
         URL(string: "\(RequestConstants.baseURL)/api/v1/profile/1")
     }
     var httpMethod: HttpMethod = .put
-    var dto: ProfileDto
+    var parameters: [String : Any]
 }

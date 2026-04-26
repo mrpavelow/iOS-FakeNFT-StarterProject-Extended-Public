@@ -1,9 +1,11 @@
 import SwiftUI
 
 struct TabBarView: View {
+    @Environment(ServicesAssembly.self) private var services: ServicesAssembly?
+    
     var body: some View {
         TabView {
-            ProfileView(viewModel: ProfileViewModel(profileService: ProfileServiceImp(networkClient: DefaultNetworkClient())))
+            ProfileView(viewModel: ProfileViewModel(profileService: services!.profileService))
                 .tabItem {
                     Label(
                         NSLocalizedString("Tab.profile", comment: ""),

@@ -22,23 +22,25 @@ final class MyNftsViewModel: ObservableObject {
         }
     }
     
-    private let myNftsService: MyNftsService
+    private let nftService: NftService
     private var myNftIds: [String]
+    private var likedNftIds: [String] = []
     
     @Published private(set) var state: State = .idle
     @Published private(set) var myNfts: [MyNftsCardModel] = []
     @Published var showOrderMenu: Bool = false
     
-    init(myNftsService: MyNftsService, myNftIds: [String]) {
-        self.myNftsService = myNftsService
+    init(nftService: NftService, myNftIds: [String], likedNftIds: [String]) {
+        self.nftService = nftService
         self.myNftIds = myNftIds
+        self.likedNftIds = likedNftIds
     }
     
     func getMyNfts() {
         guard case .loading = state else {
             Task {
                 do {
-                    let nfts = try await myNftsService.getMyNfts(nftIds: myNftIds)
+                    let nfts = try await nftService.getNfts(nftIds: myNftIds)
                     state = .loaded
                     setMyNfts(nfts: nfts)
                 } catch {
@@ -59,7 +61,27 @@ final class MyNftsViewModel: ObservableObject {
                                    imageURL: imageURL,
                                    rating: nft.rating,
                                    price: nft.price,
-                                   author: nft.author ?? "")
+                                   author: nft.author ?? "",
+                                   isLiked: likedNftIds.contains(nft.id))
+        }
+    }
+    
+    func toggleLike(for id: String) {
+        guard case .loading = state else {
+            Task {
+                do {
+                    guard let index = myNfts.firstIndex(where: { $0.id == id }) else { return }
+                    myNfts[index].isLiked.toggle()
+                    
+                    let newLikedNftIds: [String] = myNfts.filter { $0.isLiked }.map { $0.id }
+                    
+                    likedNftIds = try await nftService.saveLikes(likes: newLikedNftIds)
+                } catch {
+                    state = .failed("Не удалось загрузить ваши NFT")
+                }
+            }
+            
+            return
         }
     }
 }
