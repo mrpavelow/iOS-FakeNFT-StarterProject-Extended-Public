@@ -61,8 +61,8 @@ final class NftDetailPresenterImpl: NftDetailPresenter {
 
     private func loadNft() async {
         do {
-            let nft = try await service.loadNft(id: input.id)
-            state = .data(nft)
+//            let nft = try await service.loadNft(id: input.id)
+//            state = .data(nft)
         } catch {
             state = .failed(error)
         }
