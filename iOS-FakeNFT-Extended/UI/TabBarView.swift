@@ -6,8 +6,18 @@ enum TabTag {
 }
 
 struct TabBarView: View {
+    @Environment(ServicesAssembly.self) private var services: ServicesAssembly?
+    
     var body: some View {
         TabView {
+            ProfileView(viewModel: ProfileViewModel(profileService: services!.profileService))
+                .tabItem {
+                    Label(
+                        NSLocalizedString("Tab.profile", comment: ""),
+                        systemImage: "person.crop.circle.fill"
+                    )
+                }
+                .backgroundStyle(.background)
             TestCatalogView()
                 .tabItem {
                     Label(
