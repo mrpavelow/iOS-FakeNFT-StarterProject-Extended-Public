@@ -27,11 +27,31 @@ final class CollectionViewModel: ObservableObject {
     }
     
     private let nftService: NftService
+    private let profileService: ProfileService
     private var loadedNfts: [Nft] = []
+    private var likedNftIds: [String] = []
     
-    init(collection: NftCollection, nftService: NftService) {
+    init(collection: NftCollection, nftService: NftService, profileService: ProfileService) {
         self.collection = collection
         self.nftService = nftService
+        self.profileService = profileService
+    }
+    
+    func loadProfile() {
+        Task {
+            do {
+                let profile = try await profileService.loadProfile()
+                likedNftIds = profile.likes
+                items = items.map {
+                    var item = $0
+                    item.isLiked = likedNftIds.contains($0.id) ? true : false
+                    
+                    return item
+                }
+            } catch { print("Не удалось загрузить профиль") }
+        }
+        
+        return
     }
     
     func loadIfNeeded() {
@@ -53,7 +73,7 @@ final class CollectionViewModel: ObservableObject {
                         imageURL: nft.images.first,
                         rating: nft.rating,
                         priceText: priceText(from: nft.price),
-                        isLiked: false,
+                        isLiked: likedNftIds.contains(nft.id),
                         isInCart: false
                     )
                 }
@@ -65,6 +85,23 @@ final class CollectionViewModel: ObservableObject {
     }
     
     func toggleLike(for id: String) {
+        guard case .loading = state else {
+            Task {
+                do {
+                    guard let index = items.firstIndex(where: { $0.id == id }) else { return }
+                    items[index].isLiked.toggle()
+                    
+                    let newLikedNftIds: [String] = items.filter { $0.isLiked }.map { $0.id }
+                    
+                    likedNftIds = try await nftService.saveLikes(likes: newLikedNftIds)
+                } catch {
+                    state = .failed("Не удалось загрузить ваши NFT")
+                }
+            }
+            
+            return
+        }
+        
         guard let index = items.firstIndex(where: { $0.id == id }) else { return }
         items[index].isLiked.toggle()
     }
@@ -77,6 +114,7 @@ final class CollectionViewModel: ObservableObject {
     private func loadNfts(ids: [String]) async throws -> [Nft] {
         var seen = Set<String>()
         let uniqueIds = ids.filter { seen.insert($0).inserted }
+        
         
         return try await withThrowingTaskGroup(of: Nft.self) { group in
             for id in uniqueIds {

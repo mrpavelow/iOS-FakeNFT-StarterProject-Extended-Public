@@ -5,10 +5,12 @@ struct CatalogView: View {
     @State private var isSortDialogPresented = false
     
     private let nftService: NftService
+    private let profileService: ProfileService
     
-    init(viewModel: CatalogViewModel, nftService: NftService) {
+    init(viewModel: CatalogViewModel, nftService: NftService, profileService: ProfileService) {
         _viewModel = StateObject(wrappedValue: viewModel)
         self.nftService = nftService
+        self.profileService = profileService
     }
     
     var body: some View {
@@ -72,7 +74,8 @@ struct CatalogView: View {
                             CollectionView(
                                 viewModel: CollectionViewModel(
                                     collection: collection,
-                                    nftService: nftService
+                                    nftService: nftService,
+                                    profileService: profileService
                                 )
                             )
                         } label: {

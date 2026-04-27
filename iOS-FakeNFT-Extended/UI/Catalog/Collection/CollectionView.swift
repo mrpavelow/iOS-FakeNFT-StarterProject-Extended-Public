@@ -62,6 +62,9 @@ struct CollectionView: View {
                 }
             }
         }
+        .onAppear() {
+            viewModel.loadProfile()
+        }
     }
     
     @ViewBuilder
