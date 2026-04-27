@@ -1,5 +1,4 @@
 import Foundation
-import Combine
 
 @MainActor
 final class FavouritesViewModel: ObservableObject {
@@ -10,14 +9,14 @@ final class FavouritesViewModel: ObservableObject {
         case failed(String)
     }
     
-    private let favouritesService: FavouritesService
-    private let likes: [String]
+    private let nftService: NftService
+    private var likes: [String]
     
     @Published private(set) var state: State = .idle
     @Published private(set) var favourites: [FavouritesCardModel] = []
     
-    init(favouritesService: FavouritesService, likes: [String]) {
-        self.favouritesService = favouritesService
+    init(nftService: NftService, likes: [String]) {
+        self.nftService = nftService
         self.likes = likes
     }
     
@@ -25,7 +24,7 @@ final class FavouritesViewModel: ObservableObject {
         guard case .loading = state else {
             Task {
                 do {
-                    let nfts = try await favouritesService.getFavourites(likes: likes)
+                    let nfts = try await nftService.getNfts(nftIds: likes)
                     state = .loaded
                     setFavourites(nfts: nfts)
                 } catch {
@@ -45,7 +44,28 @@ final class FavouritesViewModel: ObservableObject {
                                        name: nft.name,
                                        imageURL: imageURL,
                                        rating: nft.rating,
-                                       price: nft.price)
+                                       price: nft.price,
+                                       isLiked: true)
+        }
+    }
+    
+    func toggleLike(for id: String) {
+        guard case .loading = state else {
+            Task {
+                do {
+                    guard let index = favourites.firstIndex(where: { $0.id == id }) else { return }
+                    
+                    var newFafourites = favourites
+                    
+                    newFafourites.remove(at: index)
+                    likes = try await nftService.saveLikes(likes: newFafourites.map { $0.id })
+                    favourites = newFafourites
+                } catch {
+                    state = .failed("Не удалось удалить из избранного")
+                }
+            }
+            
+            return
         }
     }
 }

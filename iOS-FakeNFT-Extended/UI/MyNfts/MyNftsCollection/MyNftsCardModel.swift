@@ -1,10 +1,11 @@
 import Foundation
 
-struct FavouritesCardModel: Identifiable, Hashable {
+struct MyNftsCardModel: Identifiable, Hashable {
     let id: String
     let name: String
     let imageURL: URL?
     let rating: Int
     let price: Float
+    let author: String
     var isLiked: Bool
 }

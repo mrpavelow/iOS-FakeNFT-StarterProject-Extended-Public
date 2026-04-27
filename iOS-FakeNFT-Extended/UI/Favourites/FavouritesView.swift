@@ -45,7 +45,10 @@ struct FavouritesView: View {
                         LazyVGrid(columns: columns, alignment: .trailing, spacing: 16) {
                             ForEach(viewModel.favourites) { item in
                                 FavouritesCardView(
-                                    model: item
+                                    model: item,
+                                    onLikeTap: {
+                                        viewModel.toggleLike(for: item.id)
+                                    },
                                 )
                             }
                         }
@@ -53,6 +56,7 @@ struct FavouritesView: View {
                     .padding(.horizontal)
                     .background(.white)
                     .scrollIndicators(.hidden)
+                    .navigationTitle("Избранные NFT")
                 } else {
                     Text("У Вас ещё нет избранных NFT")
                         .font(.bodyBold)
@@ -75,7 +79,7 @@ struct FavouritesView: View {
 #Preview {
     FavouritesView(
         viewModel: FavouritesViewModel(
-            favouritesService: FavouritesServiceStub(nfts: MockData.mockNfts), likes: [])
+            nftService: NftServiceStub(nfts: MockData.mockNfts), likes: [])
     )
 }
 

@@ -35,6 +35,7 @@ actor DefaultNetworkClient: NetworkClient {
             throw NetworkClientError.urlSessionError
         }
         guard 200 ..< 300 ~= response.statusCode else {
+            print(response.statusCode)
             throw NetworkClientError.httpStatusCode(response.statusCode)
         }
         return data
@@ -55,10 +56,24 @@ actor DefaultNetworkClient: NetworkClient {
         var urlRequest = URLRequest(url: endpoint)
         urlRequest.httpMethod = request.httpMethod.rawValue
 
-        if let dto = request.dto,
-           let dtoEncoded = try? encoder.encode(dto) {
-            urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            urlRequest.httpBody = dtoEncoded
+        if request.parameters.count > 0 {
+           
+            var components = URLComponents()
+            components.queryItems = request.parameters.map { key, value in
+                if let array = value as? [String] {
+                    // Для массивов создаем несколько параметров с одинаковым именем
+                    return array.map { URLQueryItem(name: key, value: $0) }
+                } else {
+                    return [URLQueryItem(name: key, value: "\(value)")]
+                }
+            }.flatMap { $0 }
+            
+            guard let queryString = components.percentEncodedQuery else {
+                throw URLError(.badURL)
+            }
+            
+            urlRequest.httpBody = queryString.data(using: .utf8)
+            urlRequest.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         }
         urlRequest.addValue(RequestConstants.token, forHTTPHeaderField: "X-Practicum-Mobile-Token")
 
