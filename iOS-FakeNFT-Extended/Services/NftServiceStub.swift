@@ -1,6 +1,10 @@
 import Foundation
 
 struct NftServiceStub: NftService {
+    func loadNft(id: String) async throws -> Nft {
+        MockData.mockNft()
+    }
+    
     
     let nfts: [Nft]
     

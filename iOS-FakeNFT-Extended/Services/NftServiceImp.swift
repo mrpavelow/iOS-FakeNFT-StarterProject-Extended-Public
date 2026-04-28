@@ -3,9 +3,22 @@ import Foundation
 
 actor NftServiceImp: NftService {
     private let networkClient: NetworkClient
+    private let storage: NftStorage
     
-    init(networkClient: NetworkClient) {
+    init(networkClient: NetworkClient, storage: NftStorage) {
         self.networkClient = networkClient
+        self.storage = storage
+    }
+
+    func loadNft(id: String) async throws -> Nft {
+        if let nft = await storage.getNft(with: id) {
+            return nft
+        }
+
+        let request = NFTRequest(id: id)
+        let nft: Nft = try await networkClient.send(request: request)
+        await storage.saveNft(nft)
+        return nft
     }
     
     func getNfts(nftIds: [String]) async throws -> [Nft] {

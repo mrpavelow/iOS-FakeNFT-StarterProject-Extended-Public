@@ -3,7 +3,7 @@ import Foundation
 @Observable
 @MainActor
 final class ServicesAssembly {
-
+    
     private let networkClient: NetworkClient
     private let nftStorage: NftStorage
     
@@ -14,10 +14,11 @@ final class ServicesAssembly {
         self.networkClient = networkClient
         self.nftStorage = nftStorage
     }
-
+    
     var nftService: NftService {
         NftServiceImp(
-            networkClient: networkClient
+            networkClient: networkClient,
+            storage: nftStorage
         )
     }
     
@@ -25,5 +26,9 @@ final class ServicesAssembly {
         ProfileServiceImp(
             networkClient: networkClient,
         )
+    }
+    
+    var catalogService: CatalogService {
+        CatalogServiceImpl(networkClient: networkClient)
     }
 }

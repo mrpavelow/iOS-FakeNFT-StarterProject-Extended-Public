@@ -13,7 +13,7 @@ struct TestCatalogView: View {
         }
         .backgroundStyle(.background)
         .sheet(isPresented: $presentingNft) {
-            NftDetailBridgeView()
+            NftDetailBridgeView(nftId: Constants.testNftId)
         }
     }
 
@@ -24,4 +24,10 @@ struct TestCatalogView: View {
 
 private enum Constants {
     static let openNftTitle = NSLocalizedString("Catalog.openNft", comment: "")
+    static let testNftId = "7773e33c-ec15-4230-a102-92426a3a6d5a"
+}
+
+#Preview {
+    TestCatalogView()
+        .environment(ServicesAssembly(networkClient: DefaultNetworkClient(), nftStorage: NftStorageImpl()))
 }
